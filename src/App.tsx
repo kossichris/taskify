@@ -1,26 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import InputField from "./components/InputField/InputField";
+import Todolist from "./components/Todolist/Todolist";
+import { Todo } from "./models/todo";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 
-function App() {
+const App: React.FC = () => {
+  // <></> =>
+  const [todo, setTodo] = useState<string>("");
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [completedTodos, setCompletedTodos] = useState<Todo[]>([]);
+
+  const handleSubmitAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (todo) {
+      setTodos([...todos, { id: Date.now(), todo: todo, isDone: false }]);
+      setTodo("");
+    }
+  };
+
+  const onDragEnd = (result: DropResult) => {
+    console.log(result);
+  };
+
+  const onTaskCompleted = (todo: Todo) => {
+    console.log(todo);
+    setCompletedTodos([...completedTodos, todo]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <DragDropContext onDragEnd={() => {}}>
+      <div className="App">
+        <span className="heading">Taskify</span>
+
+        <InputField todo={todo} setTodo={setTodo} handleAdd={handleSubmitAdd} />
+        <Todolist
+          todos={todos}
+          setTodos={setTodos}
+          completedTodos={completedTodos}
+          setCompletedTodos={() => onTaskCompleted}
+        />
+      </div>
+    </DragDropContext>
   );
-}
+};
 
 export default App;
